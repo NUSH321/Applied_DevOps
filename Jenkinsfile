@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_IMAGE = 'youtube-comment-analyzer'
-        DOCKER_TAG = "${env.BUILD_NUMBER}"
+        PYTHON_VERSION = '3.8'
+        VENV_NAME = 'venv'
     }
 
     stages {
@@ -13,40 +13,44 @@ pipeline {
             }
         }
 
+        stage('Setup Python') {
+            steps {
+                sh "python${PYTHON_VERSION} -m venv ${VENV_NAME}"
+                sh ". ${VENV_NAME}/bin/activate"
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh "${VENV_NAME}/bin/pip install -r requirements.txt"
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'python -m pytest'
+                sh "${VENV_NAME}/bin/pytest"
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("${DOCKER_IMAGE}:${DOCKER_TAG}")
+                    docker.build("my-flask-app:${env.BUILD_ID}")
                 }
             }
         }
 
         stage('Deploy') {
             steps {
-                script {
-                    // Example deployment step - adjust as needed
-                    sh "docker-compose up -d"
-                }
+                echo 'Deploying... (replace with actual deployment steps)'
             }
         }
     }
 
     post {
         always {
-            // Clean up Docker images to save space
-            sh "docker rmi ${DOCKER_IMAGE}:${DOCKER_TAG}"
+            sh "deactivate || true"
+            sh "rm -rf ${VENV_NAME}"
         }
     }
 }
