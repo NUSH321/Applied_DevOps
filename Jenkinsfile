@@ -2,55 +2,64 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSION = '3.8'
-        VENV_NAME = 'venv'
+        // Define any environment variables needed for the pipeline
     }
 
     stages {
-        stage('Checkout') {
+        stage('Clone Repository') {
             steps {
-                checkout scm
+                // Clone the Git repository containing the Flask application
+                git url: 'https://github.com/NUSH321/Applied_DevOps.git', branch: 'main'
             }
         }
 
-        stage('Setup Python') {
+        stage('Set Up Python Environment') {
             steps {
-                bat "python -m venv ${VENV_NAME}"
-                bat "${VENV_NAME}\\Scripts\\activate.bat"
+                // Create and activate a Python virtual environment
+                sh 'python -m venv venv'
+                sh 'source venv/bin/activate'
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                bat "${VENV_NAME}\\Scripts\\pip install -r requirements.txt"
+                // Install the required Python dependencies
+                sh 'venv/bin/pip install -r requirements.txt'
             }
         }
 
-        stage('Run Tests') {
+        stage('Run Unit Tests') {
             steps {
-                bat "${VENV_NAME}\\Scripts\\pytest"
+                // Run unit tests using unittest
+                sh 'venv/bin/python -m unittest discover -s tests'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Run Application') {
             steps {
-                script {
-                    bat "docker build -t my-flask-app:${env.BUILD_ID} ."
-                }
+                // Run the Flask application (usually this would be done in a separate deployment stage)
+                sh 'venv/bin/python app.py'
             }
         }
 
         stage('Deploy') {
             steps {
-                echo 'Deploying... (replace with actual deployment steps)'
+                // Add your deployment steps here
+                echo 'Deploying application...'
             }
         }
     }
 
     post {
         always {
-            bat "${VENV_NAME}\\Scripts\\deactivate.bat"
-            bat "rmdir /s /q ${VENV_NAME}"
+            echo 'Pipeline complete!'
+            cleanWs()  // Clean workspace after the build
+        }
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
