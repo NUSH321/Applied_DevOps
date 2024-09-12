@@ -15,27 +15,27 @@ pipeline {
 
         stage('Setup Python') {
             steps {
-                sh "python${PYTHON_VERSION} -m venv ${VENV_NAME}"
-                sh ". ${VENV_NAME}/bin/activate"
+                bat "python -m venv ${VENV_NAME}"
+                bat "${VENV_NAME}\\Scripts\\activate.bat"
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                sh "${VENV_NAME}/bin/pip install -r requirements.txt"
+                bat "${VENV_NAME}\\Scripts\\pip install -r requirements.txt"
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh "${VENV_NAME}/bin/pytest"
+                bat "${VENV_NAME}\\Scripts\\pytest"
             }
         }
 
         stage('Build Docker Image') {
             steps {
                 script {
-                    docker.build("my-flask-app:${env.BUILD_ID}")
+                    bat "docker build -t my-flask-app:${env.BUILD_ID} ."
                 }
             }
         }
@@ -49,8 +49,8 @@ pipeline {
 
     post {
         always {
-            sh "deactivate || true"
-            sh "rm -rf ${VENV_NAME}"
+            bat "${VENV_NAME}\\Scripts\\deactivate.bat"
+            bat "rmdir /s /q ${VENV_NAME}"
         }
     }
 }
