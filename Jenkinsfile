@@ -1,15 +1,11 @@
 pipeline {
     agent any
 
-    environment {
-        // Define any environment variables needed for the pipeline
-    }
-
     stages {
         stage('Clone Repository') {
             steps {
                 // Clone the Git repository containing the Flask application
-                git url: 'https://github.com/NUSH321/Applied_DevOps.git', branch: 'main'
+                git url: 'https://github.com/your-repo/your-flask-youtube-comment-analysis', branch: 'main'
             }
         }
 
@@ -37,7 +33,7 @@ pipeline {
 
         stage('Run Application') {
             steps {
-                // Run the Flask application (usually this would be done in a separate deployment stage)
+                // Run the Flask application (optional, usually for local testing)
                 sh 'venv/bin/python app.py'
             }
         }
