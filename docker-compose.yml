@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   flask-app:
@@ -6,21 +6,21 @@ services:
     build:
       context: .
     ports:
-      - "5000:5000"  # Expose Flask app on port 5000
+      - "5000:5000" # Expose Flask app on port 5000
     environment:
-      - FLASK_ENV=development  # Set Flask environment to development
+      - FLASK_ENV=development # Set Flask environment to development
 
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
     ports:
-      - "9090:9090"  # Expose Prometheus UI on port 9090
+      - "9090:9090" # Expose Prometheus UI on port 9090
     volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml  # Mount prometheus.yml into the container
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml # Mount prometheus.yml into the container
 
   grafana:
     container_name: grafana
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"  # Expose Grafana UI on port 3000
+      - "3000:3000" # Expose Grafana UI on port 3000
 

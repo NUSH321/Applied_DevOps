@@ -25,8 +25,11 @@ def process_comments():
     response = requests.get(url)
     data = response.json()
 
+    # Clear the previous comments before fetching new ones
+    filtered_comments.clear()
+
     # Get all the comments from the API response
-    for item in data['items']:
+    for item in data.get('items', []):
         filtered_comments.append(item['snippet']['topLevelComment']['snippet']['textDisplay'])
 
     # Process and analyze the comments using TextBlob
@@ -95,4 +98,4 @@ def analysis(filtered_comments):
     return analysis_results
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)
